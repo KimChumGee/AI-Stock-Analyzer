@@ -49,21 +49,20 @@ def analyze_chart():
 @app.route('/api/ask', methods=['POST']) # type: ignore
 def ask_follow_up_question():
     data = request.json
-    # 요청 데이터가 JSON 형식이 맞는지 확인
     if not data:
         return jsonify({"status": "error", "message": "요청 데이터(JSON)가 없습니다."}), 400
     
-    analysis_result = data.get('analysis_result') # 프론트에서 받은 1차 분석 결과
-    user_question = data.get('user_question')     # 프론트에서 받은 사용자의 새 질문
+    analysis_result = data.get('analysis_result')
+    user_question = data.get('user_question')
 
     if not analysis_result or not user_question:
         return jsonify({"status": "error", "message": "분석 결과와 질문 내용이 모두 필요합니다."}), 400
     
-    # AI 후속 질문 모듈의 함수 호출
     try:
         answer = ask_question_with_analysis(analysis_result, user_question)
         return jsonify({"status": "success", "answer": answer})
     except Exception as e:
+        print("ask_follow_up_question error:", e)  # ← 여기에 추가
         return jsonify({"status": "error", "message": f"질문 처리 중 오류 발생: {str(e)}"}), 500
 
 # API 3: 포트폴리오 정보 조회
